@@ -1,30 +1,32 @@
-import { Either, left, right } from '../shared/either'
-import { InvalidNameError } from './errors/invalid-name-error'
+import { Either, left, right } from '@/shared';
+import { InvalidNameError } from '@/entities/errors';
 
 export class Name {
-    public readonly value: string
+  public readonly value: string;
 
-    private constructor (name: string) {
-      this.value = name
+  private constructor(name: string) {
+    this.value = name;
+  }
+
+  public static create(name: string): Either<InvalidNameError, Name> {
+    if (!Name.validate(name)) {
+      return left(new InvalidNameError(name));
     }
 
-    static create (name: string): Either<InvalidNameError, Name> {
-      if (!Name.validate(name)) {
-        return left(new InvalidNameError())
-      }
+    return right(new Name(name));
+  }
 
-      return right(new Name(name))
+  public static validate(name: string): boolean {
+    if (!name) {
+      return false;
     }
 
-    public static validate (name: string): boolean {
-      if (!name) {
-        return false
-      }
+    const trimmedName = name.trim();
 
-      if (name.trim().length < 2 || name.trim().length > 256) {
-        return false
-      }
-
-      return true
+    if (trimmedName.length < 2 || trimmedName.length > 256) {
+      return false;
     }
+
+    return true;
+  }
 }
